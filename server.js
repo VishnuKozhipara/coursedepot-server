@@ -38,6 +38,15 @@ app.param('collectionName', (req, res, next, collectionName) => {
 });
 
 
+app.get('/collection/:collectionName', (req, res, next) => { 
+    req.collection.find({}, {limit: 16, sort: [['price', -1]]}).toArray((e, results) => {
+        if(e) return next(e)
+        res.send(results)
+    });
+});
+
+
+
 
 /*app.listen(3000, () => {
     console.log('localhost:3000')
