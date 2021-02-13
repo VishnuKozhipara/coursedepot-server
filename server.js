@@ -5,6 +5,8 @@ var express = require("express");
 // create a Express.js instance
 var app = express();
 
+
+
 // config Express.js
 app.use(express.json());
 app.set('port', 3000)
@@ -35,6 +37,7 @@ app.param('collectionName', (req, res, next, collectionName) => {
     return next()
 });
 
+var publicPath = path.resolve(__dirname,"images");
 app.use('/', express.static(publicPath))
 app.use(function(request, response){
     response.status(404);
