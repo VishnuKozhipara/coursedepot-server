@@ -37,12 +37,7 @@ app.param('collectionName', (req, res, next, collectionName) => {
     return next()
 });
 
-var publicPath = path.resolve(__dirname,"images");
-app.use('/', express.static(publicPath))
-app.use(function(request, response){
-    response.status(404);
-    response.send("File not Found");
-});
+
 
 
 app.get('/collection/:collectionName', (req, res, next) => { 
