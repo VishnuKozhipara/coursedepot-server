@@ -5,7 +5,7 @@ var express = require("express");
 // create a Express.js instance
 var app = express();
 var path = require("path");
-var publicPath = path.resolve(__dirname,"images");
+var publicPath = path.resolve(__dirname,"public");
 
 // config Express.js
 app.use(express.json());
@@ -85,7 +85,7 @@ app.delete('/collection/:collectionName/:id', (req, res, next) =>{
         });
 });
 
-app.use('/images', express.static(publicPath))
+app.use('/', express.static(publicPath))
 app.use(function(request, response){
     response.status(404);
     response.send("File not Found");
