@@ -19,6 +19,13 @@ app.use((req, res, next) => {
     next();
 });
 
+// connect MongoDB
+const MongoClient = require('mongodb').MongoClient;
+let db;
+MongoClient.connect('mongodb+srv://Vishnu:vishnu001@cluster0.iv05o.mongodb.net/webstore?retryWrites=true&w=majority', (err, client) => {
+     db = client.db('webstore')
+});
+
 
 
 /*app.listen(3000, () => {
