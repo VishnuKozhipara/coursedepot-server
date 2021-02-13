@@ -5,7 +5,7 @@ var express = require("express");
 // create a Express.js instance
 var app = express();
 var path = require("path");
-var publicPath = path.resolve(__dirname,"public");
+var publicPath = path.resolve(__dirname,"public/images");
 
 // config Express.js
 app.use(express.json());
@@ -27,9 +27,9 @@ MongoClient.connect('mongodb+srv://Vishnu:vishnu001@cluster0.iv05o.mongodb.net/w
 });
 
 // display a message for root path to show that API is working
-// app.get('/', (req, res, next) => {
-//     res.send('Select a collection, e.g., /collection/message')
-// });
+ app.get('/', (req, res, next) => {
+     res.send('Select a collection, e.g., /collection/message')
+ });
 
 app.param('collectionName', (req, res, next, collectionName) => {
     req.collection = db.collection(collectionName)
@@ -85,11 +85,11 @@ app.delete('/collection/:collectionName/:id', (req, res, next) =>{
         });
 });
 
-app.use('/', express.static(publicPath))
-app.use(function(request, response){
-    response.status(404);
-    response.send("File not Found");
-});
+ app.use('public/images', express.static(publicPath))
+ app.use(function(request, response){
+     response.status(404);
+     response.send("File not Found");
+ });
 
 app.listen(process.env.PORT || 3000, () => {
     console.log('localhost:3000')
