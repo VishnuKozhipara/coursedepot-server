@@ -14,8 +14,6 @@ app.use((req, res, next) => {
     // allow different header field 
     res.header('Access-Control-Allow-Headers', '*');
     res.header('Access-Control-Allow-Methods', 'POST, PUT, GET, OPTIONS');
-
-   
     next();
 });
 
@@ -35,6 +33,12 @@ app.param('collectionName', (req, res, next, collectionName) => {
     req.collection = db.collection(collectionName)
     // console.log('collection name:', req.collection)
     return next()
+});
+
+app.use('/', express.static(publicPath))
+app.use(function(request, response){
+    response.status(404);
+    response.send("File not Found");
 });
 
 
