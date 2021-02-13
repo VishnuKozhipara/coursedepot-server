@@ -85,7 +85,7 @@ app.delete('/collection/:collectionName/:id', (req, res, next) =>{
         });
 });
 
-app.use('/', express.static(publicPath))
+app.use('/images', express.static(publicPath))
 app.use(function(request, response){
     response.status(404);
     response.send("File not Found");
