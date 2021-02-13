@@ -1,24 +1,16 @@
-// Import dependency module:
-var express = require("express");
-// cont bodyParser = require('body-parser')
-
-// create a Express.js instance
+var express = require('express');                         // load Express.js
 var app = express();
 var path = require("path");
-var publicPath = path.resolve(__dirname,"public");
+const port = process.env.PORT || 3000;
+var publicPath = path.resolve(__dirname, "public");
 
-// config Express.js
-app.use(express.json());
-app.set('port', 3000)
-app.use((req, res, next) => {
-    // allow different IP address
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    // allow different header field 
-    res.header('Access-Control-Allow-Headers', '*');
-    res.header('Access-Control-Allow-Methods', 'POST, PUT, GET, OPTIONS');
-    next();
-});
+app.use(express.json());                                  // parse the request parameters
+app.use((req,res,next)=>{​​
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', '*')
+  next();
 
+}​​);
 // connect MongoDB
 const MongoClient = require('mongodb').MongoClient;
 let db;
