@@ -83,6 +83,8 @@ app.delete('/collection/:collectionName/:id', (req, res, next) =>{
         });
 });
 
+const PORT = process.env.PORT || 3000;
+app.listen(port)
 
 /*app.listen(3000, () => {
     console.log('localhost:3000')
