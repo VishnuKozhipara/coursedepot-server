@@ -4,7 +4,7 @@ var express = require("express");
 
 // create a Express.js instance
 var app = express();
-
+var path = require("path");
 var publicPath = path.resolve(__dirname,"images");
 
 // config Express.js
