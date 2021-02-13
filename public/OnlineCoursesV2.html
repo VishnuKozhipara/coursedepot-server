@@ -1,0 +1,390 @@
+<html>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Online Courses Depot</title>
+<script src="https://unpkg.com/vue"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+    integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js"
+    integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s"
+    crossorigin="anonymous"></script>
+
+
+<body>
+    <div id="app" class="container">
+        <div class="col-md-6">
+            <h1 v-text="sitename"></h1>
+        </div>
+
+        <div v-if='showLesson'>
+
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu1"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Category
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                    <a class="dropdown-item" @click="sort('subject')">Subject</a>
+                    <a class="dropdown-item" @click="sort('price')">Price</a>
+                    <a class="dropdown-item" @click="sort('location')">Location</a>
+                    <a class="dropdown-item" @click="sort('spaces')">Spaces</a>
+                </div>
+            </div>
+            <br>
+            <br>
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu1"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Sort By:
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                    <a class="dropdown-item" @click="sortDirection('asc')">Ascending</a>
+                    <a class="dropdown-item" @click="sortDirection('dsc')">Descending</a>
+                </div>
+            </div>
+            <p id="sortError"></p>
+
+            <div class="row">
+                <div v-for="lesson in sorted">
+                    <main class="ml-4">
+                        <div class="card" style="width: 18rem;">
+                            <img v-bind:src="lesson.image" class="card-img-top" alt="...">
+                            <div class="card-body">
+                                <p class="card-text">Subject: {{lesson.subject}}</p>
+                                <p class="card-text">Professor: {{lesson.teacher}}</p>
+                                <p class="card-text">Location: {{lesson.location}}</p>
+                                <p class="card-text">Price: {{lesson.price}}$</p>
+                                <p class="card-text">Spaces: {{lesson.spaces - cartCount(lesson)}}</p>
+
+                                <button v-on:click="addToCart(lesson)" v-if="canAddToCart(lesson)"
+                                    class="btn btn-success">Add to cart</button>
+                                <button v-else type="button" disabled='disabled' class="btn btn-disable">Add to
+                                    Cart</button>
+                                <span v-if='lesson.spaces === cartCount(lesson)'>Sold Out!</span>
+                                <span v-else if="lesson.spaces - cartCount(lesson) < 5">Only {{lesson.spaces -
+                                    cartCount(lesson)}} left!!</span>
+                                <span v-else>Buy Now !</span>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            </div>
+
+            <div v-if="cartItemCount > 0">
+                <h2>Shopping Cart</h2>
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th scope="col">Subject</th>
+                            <th scope="col">Location</th>
+                            <th scope="col">Price</th>
+                        </tr>
+                    </thead>
+                    <div>
+                        <tr v-for="lesson in cart">
+                            <td>
+                                <p>{{lesson.subject}}</i></p>
+                            </td>
+                            <td>{{lesson.location}}</td>
+                            <td>{{lesson.price}}</td>
+                            <td><i v-on:click="removeCart(lesson)" class=" mr-auto fas fa-trash"></td>
+                        </tr>
+                    </div>
+                </table>
+                <button v-on:click='showCheckout'>Checkout</button>
+            </div>
+            <div v-else>
+                <h2>Cart Empty</h2>
+            </div>
+
+        </div>
+
+        <div v-else>
+            <h2>Enter Information</h2>
+            <form>
+                <label>FirstName</label>
+                <input type="text" v-model.text="order.name" id="fName">
+                <label>Mobile</label>
+                <input type="text" @keypress="onlyNumbers" v-model.text="order.mobile" id="mobile">
+                <button type="button" v-on:click="submitForm(order)">Place Order</button>
+
+            </form>
+
+
+            <div>
+                <h2>Order Confirmation</h2>
+                <label class="form-control">Name: {{order.name}}</label>
+                <label class="form-control">Mobile: {{order.mobile}}</label>
+                <label class="form-control">Total: ${{total}}</label>
+            </div>
+
+
+
+            <h2>Cart</h2>
+            <button v-on:click='showCheckout' type="button">Edit Cart</button>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">Subject</th>
+                        <th scope="col">Location</th>
+                        <th scope="col">Price</th>
+                    </tr>
+                </thead>
+                <div>
+                    <tr v-for="lesson in cart">
+                        <td>
+                            <p>{{lesson.subject}}</p>
+                        </td>
+                        <td>{{lesson.location}}</td>
+                        <td>${{lesson.price}}</td>
+                    </tr>
+                </div>
+            </table>
+        </div>
+    </div>
+    </div>
+
+    <script>
+
+        var webstore = new Vue({
+            el: '#app',
+            data: {
+                sitename: "Online Courses Depot",
+                lesson:[],
+               
+
+                order: {
+                    mobile: '',
+                    proder: [],
+                    
+                },
+                sortType: '',
+                cart: [],
+                showLesson: true,
+                sortOrder: '',
+            },
+
+            created: function () {
+                fetch('https://vuejscoursedepot.herokuapp.com/').then(
+                    function (response) {
+                        response.json().then(
+                            function (json) {
+                                console.log('fetch completed')
+                                // save the returned JSON object to 'product'// note that we used 'app.product' instead of 'this.product'
+                                webstore.lesson = json;
+                            });
+                    })
+            },
+           
+
+            methods: {
+                addToCart(lesson) {
+                    this.cart.push(lesson);
+                    lesson.newSpaces--;
+                },
+                onlyNumbers(event) {
+                    let keyCode = event.keyCode ? event.keyCode : event.which;
+                    if (keyCode < 49 || keyCode > 58) {
+                        event.preventDefault();
+                    }
+                },
+                removeCart(lesson) {
+                    this.cart.splice(this.cart.indexOf(lesson), 1)
+                },
+                showCheckout() {
+                    this.showLesson = this.showLesson ? false : true;
+                },
+                submitForm(order) {
+                    this.order['proder'].push(this.cart)
+                    fetch('https://vuejscoursedepot.herokuapp.com/', {
+                        method: 'POST', // set the HTTP method as 'POST'
+                        headers: {
+                            'Content-Type': 'application/json', // set the data type as JSON
+                        },
+                        body: JSON.stringify(this.order), // need to stringify the JSON object
+                    });
+                    for (let i = 0; i < this.cart.length; i++) {
+                        id = this.cart[i]._id;
+                        quantity = this.cart[i].newSpaces ;
+                        fetch('https://vuejscoursedepot.herokuapp.com/'+id, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type' : 'application/json',
+                            "Access-Control-Allow-Origin": "*",
+                        },
+                        body: JSON.stringify({"spaces":quantity}),
+                    });
+                    };
+            },
+
+
+                canAddToCart(lesson) {
+                    return lesson.spaces > this.cartCount(lesson);
+                },
+                cartCount(id) {
+                    let count = 0;
+                    for (let i = 0; i < this.cart.length; i++) {
+                        if (this.cart[i] === id) {
+                            count++;
+                        }
+                    } return count;
+                },
+                sort(type) {
+                    this.sortType = type;
+                },
+                sortDirection(type) {
+                    this.sortOrder = type;
+                }
+            },
+            computed: {
+                cartItemCount: function () {
+                    return this.cart.length;
+                },
+
+                total() {
+                    var total = 0;
+                    for (var i = 0; i < this.cart.length; i++) {
+                        total = total + this.cart[i].price;
+                    }
+                    return total;
+                },
+                sorted() {
+                    if (this.sortType === "") {
+                        return this.lesson
+                    }
+                    if (this.sortType === "subject") {
+                        if (this.sortOrder === "asc") {
+                            document.getElementById("sortError").innerHTML = "";
+                            return this.lesson.sort((a, b) => {
+                                if (a.subject > b.subject) {
+                                    return 1;
+
+                                }
+                                if (a.subject < b.subject) {
+                                    return -1;
+                                    return 0;
+                                }
+                            })
+                        } else if (this.sortOrder === "dsc") {
+                            document.getElementById("sortError").innerHTML = "";
+                            return this.lesson.sort((a, b) => {
+                                if (a.subject > b.subject) {
+                                    return -1;
+                                    return 0;
+
+                                }
+                                if (a.subject < b.subject) {
+                                    return 1;
+
+                                }
+                            })
+                        } else {
+                            document.getElementById("sortError").innerHTML = "Select order"
+                            return this.lesson
+                        }
+                    }
+                    if (this.sortType === "location") {
+                        if (this.sortOrder === "asc") {
+                            document.getElementById("sortError").innerHTML = "";
+                            return this.lesson.sort((a, b) => {
+                                if (a.location > b.location) {
+                                    return 1;
+
+                                }
+                                if (a.location < b.location) {
+                                    return -1;
+                                    return 0;
+                                }
+                            })
+                        } else if (this.sortOrder === "dsc") {
+                            document.getElementById("sortError").innerHTML = "";
+                            return this.lesson.sort((a, b) => {
+                                if (a.location > b.location) {
+                                    return -1;
+                                    return 0;
+
+                                }
+                                if (a.location < b.location) {
+                                    return 1;
+                                }
+                            })
+                        } else {
+                            document.getElementById("sortError").innerHTML = "Select order"
+                            return this.lesson
+                        }
+                    }
+                    if (this.sortType === "price") {
+                        if (this.sortOrder === "asc") {
+                            document.getElementById("sortError").innerHTML = "";
+                            return this.lesson.sort((a, b) => {
+                                if (a.price > b.price) {
+                                    return 1;
+
+                                }
+                                if (a.price < b.price) {
+                                    return -1;
+                                    return 0;
+                                }
+                            })
+                        } else if (this.sortOrder === "dsc") {
+                            document.getElementById("sortError").innerHTML = "";
+                            return this.lesson.sort((a, b) => {
+                                if (a.price > b.price) {
+                                    return -1;
+                                    return 0;
+                                }
+                                if (a.price < b.price) {
+                                    return 1;
+                                }
+                            })
+                        } else {
+                            document.getElementById("sortError").innerHTML = "Select order"
+                            return this.lesson
+                        }
+                    }
+                    if (this.sortType === "spaces") {
+                        if (this.sortOrder === "asc") {
+                            document.getElementById("sortError").innerHTML = "";
+                            return this.lesson.sort((a, b) => {
+                                if (a.spaces > b.spaces) {
+                                    return 1;
+
+                                }
+                                if (a.spaces < b.spaces) {
+                                    return -1;
+                                    return 0;
+                                }
+                            })
+                        } else if (this.sortOrder === "dsc") {
+                            document.getElementById("sortError").innerHTML = "";
+                            return this.lesson.sort((a, b) => {
+                                if (a.spaces > b.spaces) {
+                                    return -1;
+                                    return 0;
+                                }
+                                if (a.spaces < b.spaces) {
+                                    return 1;
+                                }
+                            })
+                        } else {
+                            document.getElementById("sortError").innerHTML = "Select order"
+                            return this.lesson
+                        }
+                    }
+
+                }
+            }
+
+        })
+    </script>
+</body>
+
+</html>
