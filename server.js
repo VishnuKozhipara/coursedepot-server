@@ -26,6 +26,17 @@ MongoClient.connect('mongodb+srv://Vishnu:vishnu001@cluster0.iv05o.mongodb.net/w
      db = client.db('webstore')
 });
 
+// display a message for root path to show that API is working
+app.get('/', (req, res, next) => {
+    res.send('Select a collection, e.g., /collection/message')
+});
+
+app.param('collectionName', (req, res, next, collectionName) => {
+    req.collection = db.collection(collectionName)
+    // console.log('collection name:', req.collection)
+    return next()
+});
+
 
 
 /*app.listen(3000, () => {
